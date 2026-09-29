@@ -31,4 +31,23 @@ public class FeedbackformServices {
     public Question addQuestion(Question question) {
         return questionRepository.save(question);
     }
+
+    public Feedbackform updateFeedbackform(
+            Long id,
+            Feedbackform feedbackform) {
+
+        Feedbackform existing =
+                feedbackformRepository.findById(id).get();
+
+        existing.setSemester(feedbackform.getSemester());
+        existing.setAcademicYear(feedbackform.getAcademicYear());
+        existing.setClosingDate(feedbackform.getClosingDate());
+
+        return feedbackformRepository.save(existing);
+    }
+
+    public void deleteFeedbackform(Long id) {
+
+        feedbackformRepository.deleteById(id);
+    }
 }

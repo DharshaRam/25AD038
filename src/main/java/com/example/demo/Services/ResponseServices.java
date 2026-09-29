@@ -27,4 +27,19 @@ public class ResponseServices {
     public Optional<Response> getResponseById(Long id) {
         return responseRepository.findById(id);
     }
+
+    public Response updateResponse(Long id, Response response) {
+
+        Response existing = responseRepository.findById(id).get();
+
+        existing.setStudentId(response.getStudentId());
+        existing.setRating(response.getRating());
+
+        return responseRepository.save(existing);
+    }
+
+    public void deleteResponse(Long id) {
+
+        responseRepository.deleteById(id);
+    }
 }

@@ -33,4 +33,20 @@ public class ResponseController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public Response updateResponse(
+            @PathVariable Long id,
+            @RequestBody Response response) {
+
+        return responseServices.updateResponse(id, response);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteResponse(@PathVariable Long id) {
+
+        responseServices.deleteResponse(id);
+
+        return "Response deleted successfully";
+    }
 }

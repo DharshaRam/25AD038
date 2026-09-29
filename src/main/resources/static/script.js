@@ -1,9 +1,6 @@
-const API_URL = "http://localhost:8080";
-
-
-// ===============================
+// ======================================================
 // ADD COURSE
-// ===============================
+// ======================================================
 
 document.getElementById("courseForm").addEventListener("submit", function(event) {
 
@@ -16,10 +13,13 @@ document.getElementById("courseForm").addEventListener("submit", function(event)
         courseName: document.getElementById("courseName").value,
 
         facultyName: document.getElementById("facultyName").value
-
     };
 
-    fetch(`${API_URL}/courses`, {
+
+    console.log("Sending course:", course);
+
+
+    fetch("/courses", {
 
         method: "POST",
 
@@ -31,30 +31,41 @@ document.getElementById("courseForm").addEventListener("submit", function(event)
 
     })
 
-        .then(response => {
+        .then(function(response) {
+
+            console.log("POST status:", response.status);
 
             if (!response.ok) {
-                throw new Error("Failed to add course");
+                throw new Error("Course could not be added");
             }
 
             return response.json();
 
         })
 
-        .then(data => {
+        .then(function(data) {
 
-            document.getElementById("courseMessage").innerText =
-                "Course added successfully! Course ID: " + data.id;
+            console.log("Course saved:", data);
+
+            document.getElementById("message").className = "success";
+
+            document.getElementById("message").innerText =
+                "Course added successfully. ID = " + data.id;
 
             document.getElementById("courseForm").reset();
 
-            loadCourses();
+            // Automatically reload courses
+            getCourses();
 
         })
 
-        .catch(error => {
+        .catch(function(error) {
 
-            document.getElementById("courseMessage").innerText =
+            console.error(error);
+
+            document.getElementById("message").className = "error";
+
+            document.getElementById("message").innerText =
                 "Error: " + error.message;
 
         });
@@ -62,141 +73,183 @@ document.getElementById("courseForm").addEventListener("submit", function(event)
 });
 
 
-// ===============================
-// GET ALL COURSES
-// ===============================
+// ======================================================
+// GET COURSES
+// ======================================================
 
-function loadCourses() {
+function getCourses() {
 
-    fetch(`${API_URL}/courses`)
+    console.log("Getting courses...");
 
-        .then(response => {
+
+    fetch("/courses")
+
+        .then(function(response) {
+
+            console.log("GET status:", response.status);
 
             if (!response.ok) {
-                throw new Error("Failed to load courses");
+                throw new Error("Could not get courses");
             }
 
             return response.json();
 
         })
 
-        .then(courses => {
+        .then(function(data) {
 
-            const courseList = document.getElementById("courseList");
+            console.log("Courses received:", data);
 
-            courseList.innerHTML = "";
+            const coursesDiv =
+                document.getElementById("courses");
 
-            if (courses.length === 0) {
+            coursesDiv.innerHTML = "";
 
-                courseList.innerHTML = "<p>No courses available.</p>";
+
+            // No courses
+
+            if (data.length === 0) {
+
+                coursesDiv.innerHTML =
+                    "<p>No courses found.</p>";
 
                 return;
             }
 
-            courses.forEach(course => {
 
-                const courseDiv = document.createElement("div");
+            // Display every course
 
-                courseDiv.className = "course";
+            data.forEach(function(course) {
 
-                courseDiv.innerHTML = `
-                    <strong>${course.courseCode}</strong>
-                    <br>
-                    ${course.courseName}
-                    <br>
-                    Faculty: ${course.facultyName}
-                    <br>
-                    Course ID: ${course.id}
-                `;
+                const div = document.createElement("div");
 
-                courseList.appendChild(courseDiv);
+                div.className = "course";
+
+                div.innerHTML =
+
+                    "<h3>" + course.courseCode + "</h3>" +
+
+                    "<p><b>Course Name:</b> "
+                    + course.courseName
+                    + "</p>" +
+
+                    "<p><b>Faculty:</b> "
+                    + course.facultyName
+                    + "</p>" +
+
+                    "<p><b>Course ID:</b> "
+                    + course.id
+                    + "</p>";
+
+
+                coursesDiv.appendChild(div);
 
             });
 
         })
 
-        .catch(error => {
+        .catch(function(error) {
 
-            document.getElementById("courseList").innerHTML =
-                "<p>Error loading courses.</p>";
+            console.error(error);
+
+            document.getElementById("courses").innerHTML =
+                "<p class='error'>Error loading courses.</p>";
 
         });
+
 }
 
 
-// ===============================
+// ======================================================
 // SUBMIT FEEDBACK
-// ===============================
+// ======================================================
 
 document.getElementById("feedbackForm").addEventListener("submit", function(event) {
 
     event.preventDefault();
 
+
     const feedback = {
 
         feedbackform: {
 
-            id: Number(document.getElementById("feedbackFormId").value)
+            id: Number(
+                document.getElementById("feedbackFormId").value
+            )
 
         },
 
         question: {
 
-            id: Number(document.getElementById("questionId").value)
+            id: Number(
+                document.getElementById("questionId").value
+            )
 
         },
 
-        studentId: document.getElementById("studentId").value,
+        studentId:
+        document.getElementById("studentId").value,
 
-        rating: Number(document.getElementById("rating").value)
+        rating:
+            Number(
+                document.getElementById("rating").value
+            )
 
     };
 
 
-    fetch(`${API_URL}/responses`, {
+    console.log("Sending feedback:", feedback);
+
+
+    fetch("/responses", {
 
         method: "POST",
 
         headers: {
-
             "Content-Type": "application/json"
-
         },
 
         body: JSON.stringify(feedback)
 
     })
 
-        .then(response => {
+        .then(function(response) {
+
+            console.log("Response status:", response.status);
 
             if (!response.ok) {
-
-                throw new Error("Failed to submit feedback");
-
+                throw new Error("Feedback submission failed");
             }
 
             return response.json();
 
         })
 
-        .then(data => {
+        .then(function(data) {
+
+            console.log("Feedback saved:", data);
+
+            document.getElementById("feedbackMessage").className =
+                "success";
 
             document.getElementById("feedbackMessage").innerText =
-                "Feedback submitted successfully! Response ID: " + data.id;
+                "Feedback submitted successfully. Response ID = "
+                + data.id;
 
             document.getElementById("feedbackForm").reset();
 
         })
 
-        .catch(error => {
+        .catch(function(error) {
+
+            console.error(error);
+
+            document.getElementById("feedbackMessage").className =
+                "error";
 
             document.getElementById("feedbackMessage").innerText =
                 "Error: " + error.message;
 
         });
 
-}
-
-
-// Load courses when page opens
-loadCourses();
+});

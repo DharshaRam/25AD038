@@ -33,4 +33,20 @@ public class CourseController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public Course updateCourse(
+            @PathVariable Long id,
+            @RequestBody Course course) {
+
+        return courseServices.updateCourse(id, course);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteCourse(@PathVariable Long id) {
+
+        courseServices.deleteCourse(id);
+
+        return "Course deleted successfully";
+    }
 }

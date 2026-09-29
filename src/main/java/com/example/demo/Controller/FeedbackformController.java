@@ -32,4 +32,20 @@ public class FeedbackformController {
     public Question addQuestion(@RequestBody Question question) {
         return feedbackformServices.addQuestion(question);
     }
+
+    @PutMapping("/{id}")
+    public Feedbackform updateFeedbackform(
+            @PathVariable Long id,
+            @RequestBody Feedbackform feedbackform) {
+
+        return feedbackformServices.updateFeedbackform(id, feedbackform);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteFeedbackform(@PathVariable Long id) {
+
+        feedbackformServices.deleteFeedbackform(id);
+
+        return "Feedback form deleted successfully";
+    }
 }
